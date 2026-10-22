@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Manusia dan Perubahan - Kelas 9</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 15px;
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      color: #222;
+      -webkit-user-select: none;
+      /* Safari */
+      -ms-user-select: none;
+      /* IE 10 dan lama */
+      user-select: none;
+      /* Standar modern */
+    }
+
+    .created-by {
+      position: absolute;
+      bottom: 20px;
+      right: 25px;
+      font-size: 14px;
+      color: #d7e0e4;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 750px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 4px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 15px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #eef0ff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #2c2c54;
+      border: 2px solid #d0d5ff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .progress {
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width .4s;
+    }
+
+    .question {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      color: #2c2c54;
+      background: #b9f5b0;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .option {
+      padding: 14px 16px;
+      background: #5a15ef;
+      border: 2px solid #e0dcf5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .2s;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .option:hover:not(:disabled) {
+      background: #d62a55;
+      transform: translateX(5px);
+    }
+
+    .option:disabled {
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+
+    .option.correct {
+      background: #b9f5b0;
+      border-color: #2e7d32;
+      color: #1b5e20;
+      font-weight: 500;
+    }
+
+    .option.wrong {
+      background: #ffb3b3;
+      border-color: #c62828;
+      color: #7f0000;
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      transition: .2s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, .25);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-small {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-align: center;
+      display: none;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.benar {
+      background: #b9f5b0;
+      color: #1b5e20;
+      border: 2px solid #2e7d32;
+    }
+
+    .feedback.salah {
+      background: #ffb3b3;
+      color: #7f0000;
+      border: 2px solid #c62828;
+    }
+
+    .start-screen,
+    .end-screen {
+      text-align: center;
+      padding: 15px 10px;
+    }
+
+    .end-screen h2 {
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+
+    .score-big {
+      font-size: 60px;
+      font-weight: 900;
+      color: #764ba2;
+      margin: 10px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, .1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .music-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #fff;
+      border: 2px solid #764ba2;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+      z-index: 100;
+    }
+
+    p {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      color: #856404;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .info-box strong {
+      color: #856404;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 18px;
+        max-height: calc(100vh - 20px);
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .question {
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      .option {
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+
+      .info-bar {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+
+      .score-big {
+        font-size: 50px;
+      }
+
+      .music-toggle {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="music-toggle" id="musicBtn" title="Musik">🔇</button>
+
+  <div class="created-by">Created by Heru Yusro</div>
+
+  <div class="container" id="mainContainer">
+    <div id="startScreen" class="start-screen">
+      <h1>🌱 Kuis IPS Kelas 9</h1>
+      <p class="subtitle">Kuis Manusia dan Perubahan</p>
+      <div class="info-box">
+        <strong>📱 Info Penting untuk HP Android:</strong><br>
+        • Pastikan <strong>volume media HP tidak silent/mute</strong><br>
+        • Tekan <strong>"Test Suara"</strong> untuk mengaktifkan audio<br>
+        • Izinkan suara jika browser meminta
+      </div>
+      <p style="margin:15px 0;">Jawab 50 pertanyaan. Skor skala <strong>10 - 100</strong>.</p>
+      <button id="testBtn" onclick="testSuara()"
+        style="margin-bottom:10px; background: linear-gradient(135deg, #11998e, #38ef7d);">🔊 Test Suara Dulu</button>
+      <button onclick="mulaiKuis()">🎯 Mulai Kuis</button>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <h1>🌱 Manusia dan Perubahan</h1>
+      <div class="info-bar">
+        <span>Soal: <span id="qNum">1</span>/50</span>
+        <span>Skor: <span id="score">2</span></span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="question" id="questionText"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn-small" onclick="bacaSoal()">🔊 Baca Lagi</button>
+        <button id="nextBtn" onclick="nextSoal()" disabled>Lanjut ➡</button>
+      </div>
+    </div>
+
+    <div id="endScreen" class="end-screen hidden">
+      <h2>🎉 Kuis Selesai!</h2>
+      <p>Skor akhir kamu:</p>
+      <div class="score-big" id="finalScore">2</div>
+      <p id="pesanAkhir" style="margin-bottom:15px;"></p>
+      <button onclick="location.reload()">🔄 Ulangi Kuis</button>
+    </div>
+  </div>
+
+  <script>
+
+    // ====== LAPORAN AKTIVITAS KE GOOGLE SPREADSHEET ======
+    // Ganti URL di bawah dengan URL Web App Google Apps Script yang berakhiran /exec.
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbx16OflbXEh-gNZKUOfq4y2sE_-vDGbrt75-xJF6PMRXWRuEy05ojiGSLRtRZ0HD-JpMA/exec";
+
+    let sesiKuis = "";
+    try {
+      sesiKuis = sessionStorage.getItem("kuis_sesi_ipa") || "";
+      if (!sesiKuis) {
+        sesiKuis = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : "sesi-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+        sessionStorage.setItem("kuis_sesi_ipa", sesiKuis);
+      }
+    } catch (e) {
+      sesiKuis = "sesi-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+    }
+
+    function catatAktivitas(aktivitas, nilaiTambahan = {}) {
+      // PERBAIKAN: Mengecek apakah URL masih default/kosong menggunakan .includes()
+      if (!URL_APPS_SCRIPT || URL_APPS_SCRIPT.includes("https://script.google.com/macros/s/AKfycbx16OflbXEh-gNZKUOfq4y2sE_-vDGbrt75-xJF6PMRXWRuEy05ojiGSLRtRZ0HD-JpMA/execc")) {
+        console.warn("Laporan belum aktif. Isi URL_APPS_SCRIPT dengan URL Web App Apps Script yang valid.");
+        return;
+      }
+
+      const data = {
+        aktivitas: aktivitas,
+        halaman: "Kuis IPA - Pewarisan Sifat dan Bioteknologi",
+        url: location.href,
+        referrer: document.referrer || "",
+        sesi: sesiKuis,
+        perangkat: navigator.userAgent || "",
+        skor: nilaiTambahan.skor ?? "",
+        jumlahSoal: nilaiTambahan.jumlahSoal ?? 50,
+        jawabanBenar: nilaiTambahan.jawabanBenar ?? ""
+      };
+
+      // mode no-cors membuat respons tidak bisa dibaca browser, tetapi permintaan dikirim.
+      fetch(URL_APPS_SCRIPT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data),
+        keepalive: true
+      }).catch(err => console.warn("Gagal mengirim laporan aktivitas:", err));
+    }
+
+    // Catat kunjungan ketika halaman dibuka.
+    catatAktivitas("Halaman dibuka");
+
+
+
+
+
+
+
+
+    // ====== 50 PERTANYAAN ======
+    const soalAsli = [
+  {
+    q: "Apa yang dimaksud dengan perubahan sosial?",
+    o: [
+      "Perubahan yang terjadi pada struktur dan pola kehidupan masyarakat",
+      "Perubahan cuaca yang terjadi setiap hari",
+      "Perubahan bentuk permukaan bumi akibat gempa",
+      "Perubahan jumlah hewan di hutan"
+    ],
+    a: 0
+  },
+  {
+    q: "Berikut ini yang merupakan contoh perubahan sosial adalah ...",
+    o: [
+      "Terjadinya gerhana matahari",
+      "Masyarakat mulai menggunakan pembayaran digital",
+      "Gunung meletus dan mengeluarkan lava",
+      "Pergantian musim hujan ke musim kemarau"
+    ],
+    a: 1
+  },
+  {
+    q: "Perubahan sosial yang berlangsung secara lambat dan bertahap disebut ...",
+    o: [
+      "Revolusi",
+      "Konflik",
+      "Evolusi",
+      "Rekonstruksi"
+    ],
+    a: 2
+  },
+  {
+    q: "Perubahan sosial yang berlangsung cepat dan menyangkut dasar kehidupan masyarakat disebut ...",
+    o: [
+      "Evolusi",
+      "Adaptasi",
+      "Akulturasi",
+      "Revolusi"
+    ],
+    a: 3
+  },
+  {
+    q: "Salah satu faktor internal yang menyebabkan perubahan sosial adalah ...",
+    o: [
+      "Penemuan teknologi oleh masyarakat",
+      "Masuknya budaya asing",
+      "Terjadinya bencana alam",
+      "Peperangan dengan negara lain"
+    ],
+    a: 0
+  },
+  {
+    q: "Berikut ini yang termasuk faktor eksternal penyebab perubahan sosial adalah ...",
+    o: [
+      "Pertambahan penduduk",
+      "Penemuan baru",
+      "Konflik antarkelompok dalam masyarakat",
+      "Pengaruh kebudayaan masyarakat lain"
+    ],
+    a: 3
+  },
+  {
+    q: "Perubahan jumlah penduduk dapat menyebabkan perubahan sosial karena ...",
+    o: [
+      "Seluruh kebiasaan masyarakat selalu sama",
+      "Kebutuhan dan pola interaksi masyarakat ikut berubah",
+      "Teknologi tidak lagi dibutuhkan",
+      "Semua pekerjaan masyarakat menghilang"
+    ],
+    a: 1
+  },
+  {
+    q: "Contoh perubahan sosial yang direncanakan adalah ...",
+    o: [
+      "Kerusakan rumah akibat gempa bumi",
+      "Perubahan tradisi akibat bencana",
+      "Program pemerintah membangun sekolah di daerah terpencil",
+      "Munculnya wabah penyakit secara mendadak"
+    ],
+    a: 2
+  },
+  {
+    q: "Perubahan sosial yang terjadi tanpa direncanakan sebelumnya disebut ...",
+    o: [
+      "Perubahan tidak direncanakan",
+      "Perubahan terencana",
+      "Perubahan evolusioner",
+      "Perubahan yang disengaja"
+    ],
+    a: 0
+  },
+  {
+    q: "Sikap yang tepat dalam menghadapi perubahan sosial adalah ...",
+    o: [
+      "Menolak semua hal baru",
+      "Mengikuti semua budaya asing tanpa pertimbangan",
+      "Mempertahankan seluruh kebiasaan meskipun merugikan",
+      "Bersikap terbuka dan selektif terhadap perubahan"
+    ],
+    a: 3
+  },
+  {
+    q: "Modernisasi adalah proses ...",
+    o: [
+      "Menghapus seluruh kebudayaan tradisional",
+      "Perubahan menuju cara hidup yang lebih maju dan rasional",
+      "Menghindari penggunaan ilmu pengetahuan",
+      "Mengembalikan masyarakat ke kehidupan masa lalu"
+    ],
+    a: 1
+  },
+  {
+    q: "Contoh modernisasi dalam bidang pertanian adalah ...",
+    o: [
+      "Mengurangi hasil panen secara sengaja",
+      "Menghentikan kegiatan pertanian",
+      "Menggunakan traktor untuk mengolah lahan",
+      "Mengganti sawah dengan kawasan industri tanpa perencanaan"
+    ],
+    a: 2
+  },
+  {
+    q: "Globalisasi adalah proses ...",
+    o: [
+      "Meningkatnya keterhubungan masyarakat dunia dalam berbagai bidang",
+      "Terputusnya hubungan antarnegara",
+      "Hilangnya seluruh kegiatan perdagangan",
+      "Pembatasan komunikasi antarwilayah"
+    ],
+    a: 0
+  },
+  {
+    q: "Salah satu faktor yang mempercepat globalisasi adalah ...",
+    o: [
+      "Terbatasnya sarana transportasi",
+      "Menurunnya akses informasi",
+      "Berkurangnya hubungan antarnegara",
+      "Kemajuan teknologi komunikasi dan transportasi"
+    ],
+    a: 3
+  },
+  {
+    q: "Contoh globalisasi dalam bidang komunikasi adalah ...",
+    o: [
+      "Mengirim surat melalui kurir yang memerlukan waktu lama",
+      "Melakukan panggilan video dengan orang di negara lain",
+      "Membatasi komunikasi hanya secara tatap muka",
+      "Menghentikan penggunaan jaringan internet"
+    ],
+    a: 1
+  },
+  {
+    q: "Salah satu dampak positif globalisasi dalam bidang pendidikan adalah ...",
+    o: [
+      "Semua siswa kehilangan kesempatan belajar",
+      "Informasi pendidikan semakin sulit diperoleh",
+      "Siswa dapat mengakses sumber belajar dari berbagai negara",
+      "Kegiatan belajar hanya dapat dilakukan di sekolah"
+    ],
+    a: 2
+  },
+  {
+    q: "Dampak negatif globalisasi terhadap budaya lokal dapat berupa ...",
+    o: [
+      "Meningkatnya kepedulian terhadap kesenian daerah",
+      "Bertambahnya dokumentasi budaya tradisional",
+      "Meningkatnya penggunaan bahasa daerah",
+      "Berkurangnya minat generasi muda terhadap tradisi lokal"
+    ],
+    a: 3
+  },
+  {
+    q: "Sikap yang tepat untuk menjaga budaya lokal di era globalisasi adalah ...",
+    o: [
+      "Mempelajari dan melestarikan budaya daerah",
+      "Menganggap semua budaya lokal sudah ketinggalan zaman",
+      "Menolak seluruh bentuk perkembangan teknologi",
+      "Menghilangkan bahasa daerah dari kehidupan sehari-hari"
+    ],
+    a: 0
+  },
+  {
+    q: "Westernisasi adalah kecenderungan ...",
+    o: [
+      "Melestarikan seluruh tradisi daerah",
+      "Meniru gaya hidup Barat secara berlebihan tanpa penyaringan",
+      "Mengembangkan produk lokal",
+      "Mempelajari kebudayaan nasional"
+    ],
+    a: 1
+  },
+  {
+    q: "Konsumerisme merupakan perilaku ...",
+    o: [
+      "Menggunakan barang sesuai kebutuhan",
+      "Menabung untuk masa depan",
+      "Membeli barang secara berlebihan dan mengutamakan konsumsi",
+      "Memanfaatkan barang sampai habis masa gunanya"
+    ],
+    a: 2
+  },
+  {
+    q: "Perubahan masyarakat dari penggunaan uang tunai menuju pembayaran digital merupakan contoh perubahan dalam bidang ...",
+    o: [
+      "Geologi",
+      "Biologi",
+      "Astronomi",
+      "Ekonomi"
+    ],
+    a: 3
+  },
+  {
+    q: "Salah satu manfaat perdagangan melalui internet bagi masyarakat adalah ...",
+    o: [
+      "Memperluas jangkauan pemasaran produk",
+      "Membatasi pembeli hanya dari satu desa",
+      "Menghilangkan kebutuhan pelayanan pelanggan",
+      "Menjamin semua usaha selalu mendapatkan keuntungan"
+    ],
+    a: 0
+  },
+  {
+    q: "Perubahan teknologi dapat memengaruhi dunia kerja karena ...",
+    o: [
+      "Semua pekerjaan harus dilakukan secara manual",
+      "Sebagian pekerjaan berubah akibat otomatisasi dan digitalisasi",
+      "Keterampilan tidak lagi diperlukan",
+      "Semua jenis pekerjaan pasti hilang"
+    ],
+    a: 1
+  },
+  {
+    q: "Kemampuan yang penting dimiliki generasi muda dalam menghadapi perubahan zaman adalah ...",
+    o: [
+      "Menolak mempelajari keterampilan baru",
+      "Menghindari kerja sama dengan orang lain",
+      "Berpikir kritis, kreatif, dan mampu beradaptasi",
+      "Mengandalkan informasi tanpa memeriksa kebenarannya"
+    ],
+    a: 2
+  },
+  {
+    q: "Perpindahan penduduk dari desa ke kota untuk mencari pekerjaan disebut ...",
+    o: [
+      "Imigrasi",
+      "Emigrasi",
+      "Transmigrasi",
+      "Urbanisasi"
+    ],
+    a: 3
+  },
+  {
+    q: "Salah satu dampak urbanisasi yang tidak terkendali adalah ...",
+    o: [
+      "Meningkatnya tekanan terhadap perumahan dan fasilitas umum di kota",
+      "Berkurangnya kebutuhan transportasi perkotaan",
+      "Hilangnya seluruh masalah pengangguran",
+      "Menurunnya jumlah penduduk kota secara otomatis"
+    ],
+    a: 0
+  },
+  {
+    q: "Perubahan pola interaksi masyarakat akibat media sosial dapat terlihat dari ...",
+    o: [
+      "Hilangnya semua hubungan sosial",
+      "Meningkatnya komunikasi jarak jauh melalui internet",
+      "Berhentinya pertukaran informasi",
+      "Tidak adanya komunikasi antarwilayah"
+    ],
+    a: 1
+  },
+  {
+    q: "Salah satu risiko penggunaan media sosial yang tidak bijak adalah ...",
+    o: [
+      "Semakin mudahnya mencari bahan pelajaran",
+      "Meningkatnya peluang promosi usaha",
+      "Penyebaran berita bohong atau hoaks",
+      "Bertambahnya pilihan sarana komunikasi"
+    ],
+    a: 2
+  },
+  {
+    q: "Tindakan yang tepat sebelum membagikan informasi dari internet adalah ...",
+    o: [
+      "Langsung membagikannya kepada semua orang",
+      "Mempercayainya jika memiliki banyak komentar",
+      "Mengubah isi informasi agar lebih menarik",
+      "Memeriksa sumber dan membandingkannya dengan sumber tepercaya"
+    ],
+    a: 3
+  },
+  {
+    q: "Sikap menghargai perbedaan budaya, agama, dan suku dalam masyarakat menunjukkan perilaku ...",
+    o: [
+      "Toleransi",
+      "Diskriminasi",
+      "Etnosentrisme",
+      "Intoleransi"
+    ],
+    a: 0
+  },
+  {
+    q: "Akulturasi budaya adalah proses ...",
+    o: [
+      "Penghapusan semua budaya lama oleh budaya baru",
+      "Perpaduan unsur budaya yang berbeda tanpa menghilangkan seluruh ciri budaya asli",
+      "Pemisahan masyarakat berdasarkan budaya",
+      "Penolakan terhadap semua pengaruh budaya luar"
+    ],
+    a: 1
+  },
+  {
+    q: "Asimilasi budaya terjadi ketika ...",
+    o: [
+      "Dua kelompok tidak pernah berinteraksi",
+      "Setiap kelompok menolak semua bentuk perubahan",
+      "Dua kebudayaan berbaur sehingga terbentuk budaya baru dan perbedaan asal berkurang",
+      "Satu masyarakat tidak mengalami hubungan sosial"
+    ],
+    a: 2
+  },
+  {
+    q: "Contoh akulturasi budaya dalam kehidupan masyarakat Indonesia adalah ...",
+    o: [
+      "Larangan terhadap semua bentuk kesenian",
+      "Penghentian kegiatan budaya masyarakat",
+      "Penghapusan seluruh tradisi daerah",
+      "Bangunan masjid kuno yang memadukan unsur arsitektur lokal dan Islam"
+    ],
+    a: 3
+  },
+  {
+    q: "Kearifan lokal penting dipertahankan karena ...",
+    o: [
+      "Mengandung nilai dan pengetahuan yang berguna bagi kehidupan masyarakat",
+      "Selalu menghalangi semua bentuk kemajuan",
+      "Membuat masyarakat tidak perlu belajar",
+      "Menghapus kebutuhan untuk bekerja sama"
+    ],
+    a: 0
+  },
+  {
+    q: "Contoh perubahan sosial yang dipengaruhi oleh pendidikan adalah ...",
+    o: [
+      "Masyarakat semakin menolak pengetahuan",
+      "Masyarakat lebih memahami pentingnya kesehatan dan kebersihan",
+      "Masyarakat berhenti membaca informasi",
+      "Masyarakat tidak lagi membutuhkan keterampilan"
+    ],
+    a: 1
+  },
+  {
+    q: "Salah satu faktor yang dapat menghambat perubahan sosial adalah ...",
+    o: [
+      "Sistem pendidikan yang berkembang",
+      "Kontak dengan kebudayaan lain",
+      "Sikap tertutup terhadap hal-hal baru",
+      "Keinginan masyarakat untuk maju"
+    ],
+    a: 2
+  },
+  {
+    q: "Masyarakat yang memiliki sikap terbuka terhadap perubahan cenderung ...",
+    o: [
+      "Menolak seluruh inovasi",
+      "Menghindari perkembangan ilmu pengetahuan",
+      "Mempertahankan kebiasaan tanpa evaluasi",
+      "Lebih mudah menerima gagasan baru yang bermanfaat"
+    ],
+    a: 3
+  },
+  {
+    q: "Penemuan baru dapat mendorong perubahan sosial apabila ...",
+    o: [
+      "Diterapkan dan memengaruhi kehidupan masyarakat",
+      "Disimpan tanpa pernah digunakan",
+      "Dilarang diketahui oleh masyarakat",
+      "Tidak berhubungan dengan kebutuhan manusia"
+    ],
+    a: 0
+  },
+  {
+    q: "Perubahan iklim dapat memengaruhi kehidupan sosial masyarakat karena ...",
+    o: [
+      "Tidak pernah memengaruhi kegiatan ekonomi",
+      "Dapat mengubah mata pencaharian dan pola permukiman",
+      "Selalu meningkatkan hasil panen",
+      "Tidak memiliki hubungan dengan kehidupan manusia"
+    ],
+    a: 1
+  },
+  {
+    q: "Ketika bencana alam memaksa warga pindah ke tempat lain, perubahan yang terjadi dapat meliputi ...",
+    o: [
+      "Hanya perubahan warna bangunan",
+      "Hanya perubahan bentuk awan",
+      "Pola permukiman, mata pencaharian, dan hubungan sosial",
+      "Tidak ada perubahan dalam kehidupan warga"
+    ],
+    a: 2
+  },
+  {
+    q: "Pembangunan berkelanjutan bertujuan untuk ...",
+    o: [
+      "Menghabiskan seluruh sumber daya alam secepat mungkin",
+      "Mengutamakan keuntungan tanpa memedulikan lingkungan",
+      "Menghentikan seluruh kegiatan ekonomi masyarakat",
+      "Memenuhi kebutuhan masa kini tanpa mengurangi kemampuan generasi mendatang memenuhi kebutuhannya"
+    ],
+    a: 3
+  },
+  {
+    q: "Contoh perilaku masyarakat yang mendukung pembangunan berkelanjutan adalah ...",
+    o: [
+      "Mengurangi sampah plastik dan melakukan daur ulang",
+      "Membuang limbah rumah tangga ke sungai",
+      "Menebang pohon tanpa menanam kembali",
+      "Menggunakan sumber daya alam secara boros"
+    ],
+    a: 0
+  },
+  {
+    q: "Perubahan gaya hidup menuju penggunaan transportasi umum dapat membantu ...",
+    o: [
+      "Meningkatkan jumlah kendaraan pribadi di jalan",
+      "Mengurangi kemacetan dan emisi kendaraan per penumpang",
+      "Menghilangkan semua kebutuhan perjalanan",
+      "Meningkatkan penggunaan bahan bakar setiap orang"
+    ],
+    a: 1
+  },
+  {
+    q: "Salah satu tantangan masyarakat dalam menghadapi perkembangan teknologi adalah kesenjangan digital, yaitu ...",
+    o: [
+      "Kesamaan akses teknologi bagi seluruh penduduk",
+      "Peningkatan jumlah perangkat digital",
+      "Perbedaan akses dan kemampuan menggunakan teknologi digital",
+      "Berkurangnya kebutuhan akan informasi"
+    ],
+    a: 2
+  },
+  {
+    q: "Upaya untuk mengurangi kesenjangan digital di daerah terpencil adalah ...",
+    o: [
+      "Membatasi akses internet bagi pelajar",
+      "Menghentikan pembangunan jaringan komunikasi",
+      "Melarang penggunaan perangkat digital",
+      "Memperluas akses internet dan memberikan pelatihan literasi digital"
+    ],
+    a: 3
+  },
+  {
+    q: "Perubahan sosial dapat menimbulkan konflik apabila ...",
+    o: [
+      "Terdapat perbedaan kepentingan dan penolakan terhadap perubahan",
+      "Semua pihak berdialog dan saling memahami",
+      "Masyarakat bekerja sama mencapai tujuan bersama",
+      "Perbedaan pendapat diselesaikan secara damai"
+    ],
+    a: 0
+  },
+  {
+    q: "Cara yang tepat untuk menyelesaikan konflik akibat perubahan sosial adalah ...",
+    o: [
+      "Memaksakan pendapat kepada semua pihak",
+      "Melakukan dialog dan mencari kesepakatan bersama",
+      "Menyebarkan kabar yang belum terbukti",
+      "Memperbesar perbedaan antarkelompok"
+    ],
+    a: 1
+  },
+  {
+    q: "Mengapa generasi muda perlu mempelajari sejarah perubahan masyarakat?",
+    o: [
+      "Agar menolak seluruh perkembangan zaman",
+      "Agar mengulangi semua peristiwa masa lalu",
+      "Agar memahami proses perubahan dan mengambil pelajaran untuk masa depan",
+      "Agar mengabaikan pengalaman generasi sebelumnya"
+    ],
+    a: 2
+  },
+  {
+    q: "Seorang pengusaha kecil menggunakan media sosial untuk memasarkan produknya ke berbagai daerah. Peristiwa ini menunjukkan perubahan dalam bidang ...",
+    o: [
+      "Geologi dan astronomi",
+      "Biologi dan ekologi",
+      "Kependudukan dan iklim",
+      "Ekonomi dan komunikasi"
+    ],
+    a: 3
+  },
+  {
+    q: "Sikap terbaik manusia dalam menghadapi perubahan zaman adalah ...",
+    o: [
+      "Terus belajar, beradaptasi, dan mempertahankan nilai positif",
+      "Menolak seluruh perkembangan teknologi",
+      "Mengikuti semua tren tanpa berpikir kritis",
+      "Mengabaikan dampak perubahan terhadap lingkungan"
+    ],
+    a: 0
+  }
+    ];
+
+    // ====== FUNGSI ACAK (Fisher-Yates Shuffle) ======
+    function shuffleArray(arr) {
+      const shuffled = [...arr];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // ====== AUDIO SYSTEM ======
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch (e) { console.warn('AudioContext error:', e); }
+      }
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.frequency.value = 440;
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + 0.05);
+      } catch (e) { }
+    }
+
+    function playTone(freq, dur, type = 'sine', vol = 0.3) {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + dur);
+      } catch (e) { }
+    }
+
+    function suaraKlik() { playTone(800, 0.1, 'square', 0.2); }
+    function suaraBenar() {
+      playTone(523, 0.15, 'sine', 0.3);
+      setTimeout(() => playTone(659, 0.15, 'sine', 0.3), 150);
+      setTimeout(() => playTone(784, 0.3, 'sine', 0.3), 300);
+    }
+    function suaraSalah() {
+      playTone(300, 0.2, 'sawtooth', 0.25);
+      setTimeout(() => playTone(200, 0.4, 'sawtooth', 0.25), 200);
+    }
+
+    // ====== MUSIK LATAR ======
+    let musikOn = false, musikInterval;
+    const nadaMusik = [261, 329, 392, 329, 261, 392, 329, 261, 349, 293, 261, 329];
+    let idxNada = 0;
+
+    function toggleMusik() {
+      unlockAudio();
+      musikOn = !musikOn;
+      document.getElementById('musicBtn').textContent = musikOn ? '🔊' : '🔇';
+      if (musikOn) {
+        musikInterval = setInterval(() => {
+          playTone(nadaMusik[idxNada % nadaMusik.length], 0.4, 'triangle', 0.08);
+          idxNada++;
+        }, 500);
+      } else {
+        clearInterval(musikInterval);
+      }
+    }
+    document.getElementById('musicBtn').onclick = toggleMusik;
+
+    // ====== TEXT TO SPEECH ======
+    let voiceID = null;
+
+    function pilihVoiceIndonesia() {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length === 0) return null;
+      let voice = voices.find(v => v.lang === 'id-ID') ||
+        voices.find(v => v.lang.startsWith('id')) ||
+        voices.find(v => v.lang === 'ms-MY') ||
+        voices.find(v => v.lang.startsWith('ms'));
+      if (voice) voiceID = voice;
+      return voice;
+    }
+
+    if ('speechSynthesis' in window) {
+      pilihVoiceIndonesia();
+      speechSynthesis.onvoiceschanged = pilihVoiceIndonesia;
+    }
+
+    function bicara(teks) {
+      if (!('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      try {
+        const u = new SpeechSynthesisUtterance(teks);
+        if (voiceID) u.voice = voiceID;
+        u.lang = 'id-ID';
+        u.rate = 0.95;
+        u.pitch = 1;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+      } catch (e) { console.warn('Bicara error:', e); }
+    }
+
+    function hentikanSuara() {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    function testSuara() {
+      unlockAudio();
+      setTimeout(() => {
+        playTone(440, 0.3, 'sine', 0.3);
+        setTimeout(() => playTone(660, 0.3, 'sine', 0.3), 350);
+      }, 100);
+      setTimeout(() => bicara("Test suara berhasil. Selamat belajar!"), 200);
+      alert("🔊 Jika kamu mendengar suara beep dan bicara, berarti audio berfungsi!");
+    }
+
+    // ====== GAME LOGIC ======
+    let idx = 0, skor = 0, sudahDijawab = false;
+    let timeoutBacaSoal = null; // 🔑 Variabel untuk menyimpan ID timeout
+
+    function mulaiKuis() {
+      unlockAudio();
+
+      // Acak urutan soal setiap mulai kuis
+      soal = shuffleArray(soalAsli);
+
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(" ");
+        speechSynthesis.speak(u);
+      }
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      catatAktivitas("Mulai kuis");
+      tampilkanSoal();
+      if (!musikOn) toggleMusik();
+    }
+
+    function tampilkanSoal() {
+      sudahDijawab = false;
+
+      // 🔑 Batalkan timeout pembacaan soal sebelumnya (jika ada)
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      hentikanSuara(); // Stop semua suara yang sedang berjalan
+
+      const s = soal[idx];
+      document.getElementById('qNum').textContent = idx + 1;
+      document.getElementById('score').textContent = skor;
+      document.getElementById('progressFill').style.width = ((idx) / 50 * 100) + '%';
+      document.getElementById('questionText').textContent = (idx + 1) + ". " + s.q;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').disabled = true;
+
+      const optDiv = document.getElementById('options');
+      optDiv.innerHTML = '';
+      const huruf = ['A', 'B', 'C', 'D'];
+      s.o.forEach((opsi, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = huruf[i] + ". " + opsi;
+        btn.addEventListener('click', () => pilihJawaban(i, btn));
+        optDiv.appendChild(btn);
+      });
+
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 🔑 Simpan ID timeout agar bisa dibatalkan nanti
+      timeoutBacaSoal = setTimeout(() => {
+        if (!sudahDijawab) { // 🔑 Hanya baca jika belum dijawab
+          bicara(s.q + ". Pilihan: " + s.o.join(", "));
+        }
+        timeoutBacaSoal = null;
+      }, 500);
+    }
+
+    function bacaSoal() {
+      unlockAudio();
+      // 🔑 Batalkan timeout yang sedang berjalan
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      const s = soal[idx];
+      bicara(s.q + ". Pilihan: " + s.o.join(", "));
+    }
+
+    function pilihJawaban(pilihan, btn) {
+      if (sudahDijawab) return;
+      sudahDijawab = true;
+
+      unlockAudio();
+
+      // 🔑 KUNCI PERBAIKAN: Batalkan timeout pembacaan soal
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+
+      // 🔑 Hentikan suara apapun yang sedang diputar
+      hentikanSuara();
+
+      // Baru mainkan suara klik
+      setTimeout(suaraKlik, 50);
+
+      const s = soal[idx];
+      const buttons = document.querySelectorAll('.option');
+      buttons.forEach(b => b.disabled = true);
+
+      const fb = document.getElementById('feedback');
+      if (pilihan === s.a) {
+        btn.classList.add('correct');
+        skor += 2;
+        setTimeout(suaraBenar, 200);
+        fb.textContent = '✅ Benar! +2 poin';
+        fb.className = 'feedback show benar';
+        // 🔑 Beri jeda agar suara efek selesai dulu baru bicara
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Benar!");
+        }, 700);
+      } else {
+        btn.classList.add('wrong');
+        buttons[s.a].classList.add('correct');
+        setTimeout(suaraSalah, 200);
+        fb.textContent = '❌ Salah. Jawaban benar: ' + ['A', 'B', 'C', 'D'][s.a] + ". " + s.o[s.a];
+        fb.className = 'feedback show salah';
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Salah. Jawaban yang benar adalah " + s.o[s.a]);
+        }, 700);
+      }
+
+      document.getElementById('score').textContent = skor;
+      document.getElementById('nextBtn').disabled = false;
+
+      setTimeout(() => {
+        fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function nextSoal() {
+      unlockAudio();
+      // 🔑 Hentikan suara feedback sebelum lanjut
+      hentikanSuara();
+      suaraKlik();
+      idx++;
+      if (idx >= soal.length) {
+        selesai();
+      } else {
+        tampilkanSoal();
+      }
+    }
+
+    function selesai() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.remove('hidden');
+      document.getElementById('finalScore').textContent = skor;
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      let pesan = "";
+      if (skor >= 90) pesan = "Kamu Mendapatkan 🏆, Luar biasa! Kamu sangat menguasai materi!";
+      else if (skor >= 70) pesan = "Kamu dapat 👍, Bagus! Terus belajar ya!";
+      else if (skor >= 40) pesan = "Hasilnya Lumayan, semangat ya, masih perlu belajar lagi.";
+      else pesan = "📚 Jangan menyerah, ayo baca ulang materinya!";
+
+      document.getElementById('pesanAkhir').textContent = pesan;
+
+      // Skor pada kuis ini bertambah 2 poin per jawaban benar.
+      const jumlahJawabanBenar = Math.round(skor / 2);
+      catatAktivitas("Kuis selesai", {
+        skor: skor,
+        jumlahSoal: soal.length,
+        jawabanBenar: jumlahJawabanBenar
+      });
+
+      if (skor >= 70) setTimeout(suaraBenar, 300);
+      setTimeout(() => bicara("Kuis selesai. Skor kamu " + skor + " dari 100. " + pesan), 800);
+    }
+
+    // 1. Matikan Klik Kanan
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. Matikan Shortcut Keyboard (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+    document.onkeydown = function (e) {
+      if (e.keyCode == 123) { // F12
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+        return false;
+      }
+      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U (View Source)
+        return false;
+      }
+    }
+  </script>
+</body>
+
+</html>
